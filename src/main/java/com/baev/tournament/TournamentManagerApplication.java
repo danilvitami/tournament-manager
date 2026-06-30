@@ -23,15 +23,15 @@ public class TournamentManagerApplication {
             userRepository.deleteByUsername("Tom");
             System.out.println("База очищена");
             /// 1)
-//            System.out.println("Тест Save()");
-//            User Tom = new User();
-//            Tom.setUsername("Tom");
-//            Tom.setPassword("Secret07");
-//            Tom.setEmail("Tom07@xmail.ru");
-//            Tom.setRole(Role.PLAYER);
-//
-//            userRepository.save(Tom);
-//            System.out.println("save() работает");
+            System.out.println("Тест Save()");
+            User Tom = new User();
+            Tom.setUsername("Tom");
+            Tom.setPassword("Secret07");
+            Tom.setEmail("Tom07@xmail.ru");
+            Tom.setRole(Role.PLAYER);
+
+            userRepository.save(Tom);
+            System.out.println("save() работает");
 
             /// 2)
             System.out.println("Тест findByUsername()");
