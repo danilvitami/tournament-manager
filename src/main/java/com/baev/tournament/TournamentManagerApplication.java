@@ -18,6 +18,10 @@ public class TournamentManagerApplication {
     @Bean
     public CommandLineRunner testApp(UserRepository userRepository){
         return args ->{
+            /// 0)
+            System.out.println("Очистка старых данных пользователя");
+            userRepository.deleteByUsername("Tom");
+            System.out.println("База очищена");
             /// 1)
 //            System.out.println("Тест Save()");
 //            User Tom = new User();

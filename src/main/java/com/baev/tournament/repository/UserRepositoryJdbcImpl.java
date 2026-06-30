@@ -34,7 +34,7 @@ public class UserRepositoryJdbcImpl implements UserRepository{
             pstmt.setString(3,user.getEmail());
             pstmt.setString(4,user.getRole().name());
 
-            rs = pstmt.executeQuery();//база выполняет запрос и возвращает resultSet
+            rs = pstmt.executeQuery();//база выполняет запрос и возвращает resultSet(таблицу)
 
             if (rs.next()){
                 user.setId(rs.getLong("id"));//если база вернула строку
@@ -117,6 +117,40 @@ public class UserRepositoryJdbcImpl implements UserRepository{
                 try{conn.close();}
                 catch(SQLException e){
                     System.err.println("[UserRepository.findByUsername] Не удается закрыть Connection:");
+                }
+            }
+        }
+    }
+    @Override
+    public void deleteByUsername(String username){
+        String sql = "DELETE FROM users WHERE username = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try{
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, username);
+            pstmt.executeUpdate();
+        }
+        catch(SQLException e){
+            throw new RuntimeException("Ошибка при удалении пользователя:"+ username,e);
+        }
+        finally{
+            if(pstmt != null){
+                try{
+                    pstmt.close();
+                }
+                catch (SQLException e){
+                    System.err.println("[UserRepository.delete] Не удается закрыть PreparedStatement: " + e.getMessage());
+                }
+            }
+            if (conn != null){
+                try{
+                    conn.close();
+                }
+                catch(SQLException e){
+                    System.err.println("[UserRepository.delete] Не удается закрыть Connection: " + e.getMessage());
                 }
             }
         }
