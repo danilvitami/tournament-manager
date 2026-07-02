@@ -6,6 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.baev.tournament.model.Role;
 import com.baev.tournament.model.User;
 import com.baev.tournament.repository.UserRepository;
+
+import com.baev.tournament.repository.TournamentRepository;
+import com.baev.tournament.model.Tournament;
+
 import org.springframework.boot.CommandLineRunner;//для автоматического выполнения фрагмента кода сразу после запуска
 import org.springframework.context.annotation.Bean;
 
@@ -16,7 +20,7 @@ public class TournamentManagerApplication {
         SpringApplication.run(TournamentManagerApplication.class, args);}
 
     @Bean
-    public CommandLineRunner testApp(UserRepository userRepository){
+    public CommandLineRunner testApp(UserRepository userRepository, TournamentRepository tournamentRepository){
         return args ->{
             /// 0)
             System.out.println("Очистка старых данных пользователя");
@@ -52,5 +56,11 @@ public class TournamentManagerApplication {
             }
             else{System.out.println("Ошибка,кого то нашел");
         };
+            /// 4)
+            System.out.println("Тест save() для турнира");
+            Tournament tour1 = new Tournament("Кубок Саратова", "Для любителей", "Шахматы",10, 32);
+            tournamentRepository.save(tour1);
+            System.out.println("Турнир добавлен");
+
     };}
     }
