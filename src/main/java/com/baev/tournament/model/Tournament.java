@@ -3,7 +3,7 @@ package com.baev.tournament.model;
 import lombok.Data;
 
 @Data
-public class Tournament {
+public class    Tournament {
     private Long id;
     private String name;
     private String description;//Описание
