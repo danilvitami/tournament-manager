@@ -11,7 +11,7 @@ public class TournamentServiceImpl implements TournamentService{
         this.tournamentRepository = tournamentRepository;
     }
     @Override
-    public void createTournament(Tournament tournament){
+    public Tournament createTournament(Tournament tournament){
 
         if (tournament.getName() == null || tournament.getName().isBlank()){//.trim().isEmpty()
             throw new IllegalArgumentException("Ошибка. Название турнира не может быть пустым");
@@ -21,7 +21,7 @@ public class TournamentServiceImpl implements TournamentService{
             "не может быть больше макс. " + tournament.getMaxParticipants());
         }
 
-        tournamentRepository.save(tournament);
+        return tournamentRepository.save(tournament);
     }
 
 }
