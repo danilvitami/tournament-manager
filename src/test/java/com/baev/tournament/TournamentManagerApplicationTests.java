@@ -25,16 +25,21 @@ class TournamentManagerApplicationTests {
 
     @Test
     void TestOperations(){
-//        /// 1)deleteByUsername
-//        System.out.println("Очистка данных пользователя");
-//        userRepository.deleteByUsername("Tom");
-//        System.out.println("База очищена");
+        /// 1)deleteByUsername
+        System.out.println("Очистка данных пользователя");
+        userRepository.deleteByUsername("Tom");
+        System.out.println("База очищена");
 
-//        /// 2) Save для User
-//        System.out.println("Тест метода save() для пользователя");
-//        User Tom = new User("Tom","Secret07", "Tom07@xmail.ru", Role.PLAYER);
-//        userRepository.save(Tom);
-//        System.out.println("сохранил пользователя");
+
+        System.out.println("Очистка данных пользователя");
+        userRepository.deleteByUsername("Bob");
+        System.out.println("База очищена");
+
+        /// 2) Save для User
+        System.out.println("Тест метода save() для пользователя");
+        User Tom = new User("Tom","Secret07", "Tom07@xmail.ru", Role.PLAYER);
+        userRepository.save(Tom);
+        System.out.println("сохранил пользователя");
 //
         User Bob = new User();
         Bob.setUsername("Bob");
