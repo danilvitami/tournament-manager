@@ -4,7 +4,7 @@ import com.baev.tournament.model.Tournament;
 
 import javax.sql.DataSource;// Интерфейс для управления пулом подключений к базе
 import org.springframework.stereotype.Repository;
-import java.sql.Connection;// Класс самого физического "провода" к базе данных
+import java.sql.Connection;// Класс физического "провода" к базе данных
 import java.sql.PreparedStatement;// Класс для безопасности SQL запросов
 import java.sql.SQLException;
 

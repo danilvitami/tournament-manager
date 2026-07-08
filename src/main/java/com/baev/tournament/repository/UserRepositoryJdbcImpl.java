@@ -6,7 +6,7 @@ import com.baev.tournament.model.Role;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;// Интерфейс для управления пулом подключений к базе
-import java.sql.Connection;// Класс самого физического "провода" к базе данных
+import java.sql.Connection;// Класс физического "провода" к базе данных
 import java.sql.PreparedStatement;// Класс для безопасности SQL запросов
 import java.sql.ResultSet;// Класс для хранения ответа от базы,то есть строк из таблицы
 import java.sql.SQLException;
@@ -21,11 +21,10 @@ public class UserRepositoryJdbcImpl implements UserRepository{
     @Override
     public User save(User user){
         String sql = "INSERT INTO users (username, password,email, role) VALUES (?, ?, ?, ?) RETURNING id";
-        //RETURNING id для возврата сгенерированного id новой строки
+
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        /// поменять на try() {} потом
         try {
             conn = dataSource.getConnection();//берем готовый канал связи с БД
             pstmt = conn.prepareStatement(sql);// Передаем текст в БД и создаем безопасный шаблон запроса
@@ -49,8 +48,7 @@ public class UserRepositoryJdbcImpl implements UserRepository{
             if (rs != null) {
                 try{rs.close();}
                 catch (SQLException e){
-                    System.err.println("[UserRepository.save] Не удается закрыть ResultSet:" + e.getMessage());//На случай,если
-                    //метод close() тоже выбросит ошибку,в противном случае stmt и conn останутся открытми
+                    System.err.println("[UserRepository.save] Не удается закрыть ResultSet:" + e.getMessage());
                 }
             }
             if (pstmt  != null){
