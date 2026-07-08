@@ -1,12 +1,14 @@
 package com.baev.tournament.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class    Tournament {
     private Long id;
     private String name;
-    private String description;//Описание
+    private String description;
     private String discipline;
     //участники
     private int minParticipants;
@@ -24,6 +26,6 @@ public class    Tournament {
     }
 
     public Tournament() {
-        this.status = TournamentStatus.REGISTRATION;//каждому новому обьекту мы присваиваем статут регистрации
+        this.status = TournamentStatus.REGISTRATION;
     }
 }
