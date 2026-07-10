@@ -17,7 +17,7 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
         this.dataSource = dataSource;
     }
     @Override
-    public void save(Tournament tournament){
+    public Tournament save(Tournament tournament){
         String sql = "INSERT INTO tournaments (name,description, discipline, min_participants, max_participants, status) VALUES (?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -53,4 +53,5 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
                 }
             }
     }
-}}
+        return tournament;
+    }}
