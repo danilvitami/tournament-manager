@@ -3,6 +3,9 @@ package com.baev.tournament.service;
 import com.baev.tournament.repository.TournamentRepository;
 import com.baev.tournament.model.Tournament;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 @Service
 public class TournamentServiceImpl implements TournamentService{
     private final TournamentRepository tournamentRepository;
@@ -22,6 +25,16 @@ public class TournamentServiceImpl implements TournamentService{
         }
 
         return tournamentRepository.save(tournament);
+    }
+
+    @Override
+    public List<Tournament> getAllTournaments() {
+        return tournamentRepository.findAll();
+    }
+
+    @Override
+    public Tournament getTournamentById(Long id) {
+        return tournamentRepository.findById(id);
     }
 
 }
