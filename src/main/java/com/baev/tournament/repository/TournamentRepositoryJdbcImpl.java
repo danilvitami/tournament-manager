@@ -6,7 +6,10 @@ import javax.sql.DataSource;// Интерфейс для управления п
 import org.springframework.stereotype.Repository;
 import java.sql.Connection;// Класс физического "провода" к базе данных
 import java.sql.PreparedStatement;// Класс для безопасности SQL запросов
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class TournamentRepositoryJdbcImpl implements TournamentRepository {
@@ -16,6 +19,7 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
     public TournamentRepositoryJdbcImpl(DataSource dataSource){
         this.dataSource = dataSource;
     }
+
     @Override
     public Tournament save(Tournament tournament){
         String sql = "INSERT INTO tournaments (name,description, discipline, min_participants, max_participants, status) VALUES (?, ?, ?, ?, ?, ?)";
@@ -43,15 +47,96 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
                     pstmt.close();
                 }
                 catch(SQLException e){
-                System.err.println("[TournametRepository.save] Не удается заакрыть PreparedStatement: "+ e.getMessage());
+                System.err.println("[TournametRepository.save] Не удается закрыть PreparedStatement: "+ e.getMessage());
             }
         }
             if (conn != null){
                 try{conn.close();}
                 catch (SQLException e){
-                    System.err.println("[TournametRepository.save] Не удается заакрыть Connection: "+ e.getMessage());
+                    System.err.println("[TournametRepository.save] Не удается закрыть Connection: "+ e.getMessage());
                 }
             }
     }
         return tournament;
-    }}
+    }
+    @Override
+    public List<Tournament> findAll(){
+        List<Tournament> tournaments = new ArrayList<>();
+        String sql = "SELECT * FROM tournaments";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Tournament t = new Tournament();
+                t.setId(rs.getLong("id"));
+                t.setName(rs.getString("title"));
+                t.setDiscipline(rs.getString("discipline"));
+                tournaments.add(t);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при получении списка турниров", e);
+        } finally {
+            if (rs != null) {
+                try { rs.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.findAll] Ошибка закрытия ResultSet: " + e.getMessage()); }
+            }
+            if (pstmt != null) {
+                try { pstmt.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.findAll] Ошибка закрытия PreparedStatement: " + e.getMessage()); }
+            }
+            if (conn != null) {
+                try { conn.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.findAll] Ошибка закрытия Connection: " + e.getMessage()); }
+            }
+        }
+        return tournaments;
+    }
+
+    @Override
+    public Tournament findById(Long id) {
+        String sql = "SELECT * FROM tournaments WHERE id = ?";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, id);
+
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                Tournament t = new Tournament();
+                t.setId(rs.getLong("id"));
+                t.setName(rs.getString("title"));
+                t.setDiscipline(rs.getString("discipline"));
+                return t;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при поиске турнира с id: " + id, e);
+        } finally {
+            if (rs != null) {
+                try { rs.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.findById] Ошибка закрытия ResultSet: " + e.getMessage()); }
+            }
+            if (pstmt != null) {
+                try { pstmt.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.findById] Ошибка закрытия PreparedStatement: " + e.getMessage()); }
+            }
+            if (conn != null) {
+                try { conn.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.findById] Ошибка закрытия Connection: " + e.getMessage()); }
+            }
+        }
+        return null;
+    }
+}
