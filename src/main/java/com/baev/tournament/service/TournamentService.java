@@ -11,4 +11,8 @@ public interface TournamentService {
     Tournament getTournamentById(Long id);
     Tournament updateTournament(Long id, Tournament tournament);
     void deleteTournament(Long id);
+
+public interface TournamentService {
+    void createTournament(Tournament tournament);
+
 }

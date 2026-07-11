@@ -4,7 +4,9 @@ import com.baev.tournament.repository.TournamentRepository;
 import com.baev.tournament.model.Tournament;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
+
 
 @Service
 public class TournamentServiceImpl implements TournamentService{
@@ -14,7 +16,9 @@ public class TournamentServiceImpl implements TournamentService{
         this.tournamentRepository = tournamentRepository;
     }
     @Override
+
     public Tournament createTournament(Tournament tournament){
+    public void createTournament(Tournament tournament){
 
         if (tournament.getName() == null || tournament.getName().isBlank()){//.trim().isEmpty()
             throw new IllegalArgumentException("Ошибка. Название турнира не может быть пустым");
@@ -51,6 +55,7 @@ public class TournamentServiceImpl implements TournamentService{
     @Override
     public void deleteTournament(Long id) {
         tournamentRepository.deleteById(id);
+        tournamentRepository.save(tournament);
     }
 
 }
