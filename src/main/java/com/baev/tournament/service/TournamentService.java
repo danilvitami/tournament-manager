@@ -1,7 +1,6 @@
 package com.baev.tournament.service;
 
 import com.baev.tournament.model.Tournament;
-
 import java.util.List;
 
 public interface TournamentService {
