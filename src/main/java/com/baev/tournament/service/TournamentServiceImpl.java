@@ -37,4 +37,20 @@ public class TournamentServiceImpl implements TournamentService{
         return tournamentRepository.findById(id);
     }
 
+    @Override
+    public Tournament updateTournament(Long id, Tournament tournament) {
+        Tournament existingTournament = tournamentRepository.findById(id);
+        if (existingTournament == null) {
+            throw new RuntimeException("Турнир с id " + id + " не найден");
+        }
+        tournament.setId(id);
+
+        return tournamentRepository.update(tournament);
+    }
+
+    @Override
+    public void deleteTournament(Long id) {
+        tournamentRepository.deleteById(id);
+    }
+
 }

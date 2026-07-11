@@ -13,12 +13,19 @@ public class TournamentController {
     @Autowired
     private TournamentService tournamentService;
 
-    @PostMapping("/create")//Определяет тип запроса и его путь:
-    // POST используется для создания новых данных
-    // URL для этого метода будет: .../api/tournaments/create
-    @ResponseStatus(HttpStatus.CREATED)// задаем конкретный HTTP-код состояния
+    @PostMapping("/create")
+
+    @ResponseStatus(HttpStatus.CREATED)
 
     public Tournament createTournament(@RequestBody Tournament tournament){
         return tournamentService.createTournament(tournament);
+    }
+    @PutMapping("/{id}")
+    public Tournament updateTournament(@PathVariable Long id, @RequestBody Tournament tournament) {
+        return tournamentService.updateTournament(id, tournament);
+    }
+    @DeleteMapping("/{id}")
+    public void deleteTournament(@PathVariable Long id) {
+        tournamentService.deleteTournament(id);
     }
 }

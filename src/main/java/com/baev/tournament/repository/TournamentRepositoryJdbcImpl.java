@@ -139,4 +139,65 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
         }
         return null;
     }
+    @Override
+    public Tournament update(Tournament tournament) {
+        String sql = "UPDATE tournaments SET title = ?, discipline = ? WHERE id = ?";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, tournament.getName());
+            pstmt.setString(2, tournament.getDiscipline());
+            pstmt.setLong(3, tournament.getId());
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new RuntimeException("Турнир с id " + tournament.getId() + " не найден в базе.");
+            }
+
+            return tournament;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при обновлении турнира с id: " + tournament.getId(), e);
+        } finally {
+            if (pstmt != null) {
+                try { pstmt.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.update] Ошибка закрытия PreparedStatement: " + e.getMessage()); }
+            }
+            if (conn != null) {
+                try { conn.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.update] Ошибка закрытия Connection: " + e.getMessage()); }
+            }
+        }
+    }
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM tournaments WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, id);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при удалении турнира с id: " + id, e);
+        } finally {
+            if (pstmt != null) {
+                try { pstmt.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.deleteById] Ошибка закрытия PreparedStatement: " + e.getMessage()); }
+            }
+            if (conn != null) {
+                try { conn.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.deleteById] Ошибка закрытия Connection: " + e.getMessage()); }
+            }
+        }
+    }
 }

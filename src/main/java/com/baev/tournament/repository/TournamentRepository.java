@@ -8,4 +8,6 @@ public interface TournamentRepository{
     Tournament save(Tournament tournament);
     List<Tournament> findAll();
     Tournament findById(Long id);
+    Tournament update (Tournament tournament);
+    void deleteById(Long id);
 }

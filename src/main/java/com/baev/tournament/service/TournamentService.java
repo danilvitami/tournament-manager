@@ -9,4 +9,6 @@ public interface TournamentService {
 
     List<Tournament> getAllTournaments();
     Tournament getTournamentById(Long id);
+    Tournament updateTournament(Long id, Tournament tournament);
+    void deleteTournament(Long id);
 }
