@@ -15,3 +15,10 @@ CREATE TABLE IF NOT EXISTS tournaments(
     max_participants INT NOT NULL,
     status VARCHAR(50) NOT NULL
 );
+CREATE TABLE tournament_users (
+tournament_id BIGINT NOT NULL,
+user_id BIGINT NOT NULL,
+PRIMARY KEY (tournament_id, user_id),
+FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

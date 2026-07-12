@@ -200,4 +200,33 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
             }
         }
     }
+    @Override
+    public void addParticipant(Long tournamentId, Long userId) {
+        String sql = "INSERT INTO tournament_users (tournament_id, user_id) VALUES (?, ?)";
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setLong(1, tournamentId);
+            pstmt.setLong(2, userId);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при регистрации на турнир. Возможно, пользователь уже зарегистрирован.", e);
+        } finally {
+            if (pstmt != null) {
+                try { pstmt.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.addParticipant] Ошибка закрытия PreparedStatement: " + e.getMessage()); }
+            }
+            if (conn != null) {
+                try { conn.close(); }
+                catch (SQLException e) { System.err.println("[TournamentRepository.addParticipant] Ошибка закрытия Connection: " + e.getMessage()); }
+            }
+        }
+    }
 }

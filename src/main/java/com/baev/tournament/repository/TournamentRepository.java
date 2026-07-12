@@ -10,4 +10,5 @@ public interface TournamentRepository{
     Tournament findById(Long id);
     Tournament update (Tournament tournament);
     void deleteById(Long id);
+    void addParticipant(Long tournamentId, Long userId);
 }

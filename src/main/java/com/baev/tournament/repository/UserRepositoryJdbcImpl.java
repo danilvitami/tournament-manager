@@ -5,6 +5,8 @@ import com.baev.tournament.model.Role;
 
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.sql.DataSource;// Интерфейс для управления пулом подключений к базе
 import java.sql.Connection;// Класс физического "провода" к базе данных
 import java.sql.PreparedStatement;// Класс для безопасности SQL запросов
@@ -150,6 +152,50 @@ public class UserRepositoryJdbcImpl implements UserRepository{
                 catch(SQLException e){
                     System.err.println("[UserRepository.delete] Не удается закрыть Connection: " + e.getMessage());
                 }
+            }
+        }
+    }
+    @Override
+    public List<User> findUsersByTournamentId(Long tournamentId) {
+        String sql = "SELECT u.* FROM users u " +
+                "JOIN tournament_users tu ON u.id = tu.user_id " +
+                "WHERE tu.tournament_id = ?";
+
+        List<User> participants = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, tournamentId);
+
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getLong("id"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+
+                // user.setRole(Role.valueOf(rs.getString("role")));
+
+                participants.add(user);
+            }
+
+            return participants;
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при получении участников турнира с id: " + tournamentId, e);
+        } finally {
+            if (rs != null) {
+                try { rs.close(); } catch (SQLException e) { System.err.println("Ошибка закрытия ResultSet"); }
+            }
+            if (pstmt != null) {
+                try { pstmt.close(); } catch (SQLException e) { System.err.println("Ошибка закрытия PreparedStatement"); }
+            }
+            if (conn != null) {
+                try { conn.close(); } catch (SQLException e) { System.err.println("Ошибка закрытия Connection"); }
             }
         }
     }
