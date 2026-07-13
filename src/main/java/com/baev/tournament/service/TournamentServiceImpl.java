@@ -21,6 +21,19 @@ public class TournamentServiceImpl implements TournamentService{
     @Override
     public Tournament createTournament(Tournament tournament){
 
+import com.baev.tournament.repository.TournamentRepository;
+import com.baev.tournament.model.Tournament;
+import org.springframework.stereotype.Service;
+@Service
+public class TournamentServiceImpl implements TournamentService{
+    private final TournamentRepository tournamentRepository;
+
+    public TournamentServiceImpl(TournamentRepository tournamentRepository){
+        this.tournamentRepository = tournamentRepository;
+    }
+    @Override
+    public void createTournament(Tournament tournament){
+
         if (tournament.getName() == null || tournament.getName().isBlank()){//.trim().isEmpty()
             throw new IllegalArgumentException("Ошибка. Название турнира не может быть пустым");
         }
@@ -75,6 +88,8 @@ public class TournamentServiceImpl implements TournamentService{
             throw new RuntimeException("Турнир с id " + tournamentId + " не найден.");
         }
         return userRepository.findUsersByTournamentId(tournamentId);
+
+        tournamentRepository.save(tournament);
     }
 
 }

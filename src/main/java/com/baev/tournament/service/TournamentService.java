@@ -1,6 +1,7 @@
 package com.baev.tournament.service;
 
 import com.baev.tournament.model.Tournament;
+
 import com.baev.tournament.model.User;
 
 import java.util.List;
@@ -15,4 +16,8 @@ public interface TournamentService {
     void registerParticipant(Long tournamentId, Long userId);
 
     List<User> getTournamentParticipants(Long tournamentId);
+
+
+public interface TournamentService {
+    void createTournament(Tournament tournament);
 }
