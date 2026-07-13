@@ -28,6 +28,7 @@ class TournamentManagerApplicationTests {
 
     @Test
     void testUserOperations(){
+        //Для пользователя
         /// 1)deleteByUsername
         System.out.println("Очистка данных пользователя");
         userRepository.deleteByUsername("Tom");
@@ -64,22 +65,88 @@ class TournamentManagerApplicationTests {
     }
         @Test
         void testTournamentOperations(){
-       /// для турниров
-        // 1. Сохранение турнира
+       // Для турниров
+        /// 1) Сохранение турнира
         System.out.println("Тест метода save() для турнира");
         Tournament tour_1 = new Tournament("Кубок Саратова", "Для любителей", "Шахматы",10, 32);
         Tournament savedTour = tournamentRepository.save(tour_1);
         Assertions.assertNotNull(savedTour.getId(), "ID турнира не должен быть null");
         System.out.println("Турнир добавлен");
-        // 2. Тест метода findAll
+        /// 2) Тест метода findAll
         Tournament foundTour = tournamentRepository.findById(savedTour.getId());
         Assertions.assertNotNull(foundTour, "Турнир должен быть найден по ID");
         Assertions.assertEquals("Кубок Саратова", foundTour.getName(), "Названия турниров должны совпадать");
-        // 3. Тест метода findAll
+        /// 3) Тест метода findAll
         List<Tournament> allTournaments = tournamentRepository.findAll();
         Assertions.assertFalse(allTournaments.isEmpty(), "Список турниров не должен быть пустым");
 
         boolean isOurTournamentInList = allTournaments.stream().anyMatch(t -> t.getName().equals("Кубок Саратова"));
         Assertions.assertTrue(isOurTournamentInList, "Созданный турнир должен присутствовать в общем списке");
+    }
+
+    @Test
+    void testTournamentUpdateAndDelete() {
+        System.out.println("Тест методов update() и deleteById() для турниров");
+
+        /// 1)создаем турнир
+        Tournament tempTour = new Tournament("Летний Кубок", "Для тестов", "CS:GO", 5, 10);
+        Tournament savedTour = tournamentRepository.save(tempTour);
+        Long id = savedTour.getId();
+        System.out.println("Создан временный турнир с ID: " + id);
+
+        /// 2) Тест метода update
+        System.out.println("Тест метода update() для турнира");
+        savedTour.setName("Осенний Кубок"); // Меняем название
+        savedTour.setDiscipline("Dota 2");   // Меняем дисциплину
+
+        Tournament updatedTour = tournamentRepository.update(savedTour);
+        Assertions.assertEquals("Осенний Кубок", updatedTour.getName(), "Название турнира должно было обновиться");
+        Assertions.assertEquals("Dota 2", updatedTour.getDiscipline(), "Дисциплина должна была обновиться");
+        System.out.println("Турнир успешно обновлен");
+
+        /// 3) Тест метода deleteById
+        System.out.println("Тест метода deleteById() для турнира");
+        tournamentRepository.deleteById(id);
+
+        Tournament deletedTour = tournamentRepository.findById(id);
+        Assertions.assertNull(deletedTour, "Турнир должен быть удален из БД и возвращать null");
+        System.out.println("Турнир успешно удален");
+    }
+
+    @Test
+    void testManyToManyRelations() {
+        System.out.println("Тест связей (Регистрация на турнир и получение списка)");
+
+        System.out.println("Очистка данных тестового пользователя Alice");
+        userRepository.deleteByUsername("Alice");
+
+        /// 2)Создаем пользователя
+        User alice = new User("Alice", "pass123", "alice@mail.ru", Role.PLAYER);
+        User savedAlice = userRepository.save(alice);
+        System.out.println("Сохранен пользователь Alice");
+
+        /// 3) Создаем турнир
+        Tournament tour = new Tournament("Гранд Финал", "Тест связей", "FIFA", 2, 8);
+        Tournament savedTour = tournamentRepository.save(tour);
+        System.out.println("Сохранен турнир Гранд Финал");
+
+        /// 4) Тест метода addParticipant
+        System.out.println("Тест метода addParticipant() - регистрация Alice на турнир");
+        tournamentRepository.addParticipant(savedTour.getId(), savedAlice.getId());
+
+        /// 5) Тест метода findUsersByTournamentId
+        System.out.println("Тест метода findUsersByTournamentId()");
+        List<User> participants = userRepository.findUsersByTournamentId(savedTour.getId());
+
+        Assertions.assertNotNull(participants, "Список участников не должен быть null");
+        Assertions.assertFalse(participants.isEmpty(), "Список участников не должен быть пустым");
+        Assertions.assertEquals(1, participants.size(), "В списке должен быть ровно 1 участник");
+        Assertions.assertEquals("Alice", participants.get(0).getUsername(), "Имя участника должно совпадать с зарегистрированным");
+        System.out.println("Связь успешно отработала, Alice найдена в списке участников турнира");
+
+        System.out.println("Очистка тестовых данных после проверки связей");
+        tournamentRepository.deleteById(savedTour.getId());
+        userRepository.deleteByUsername("Alice");
+        System.out.println("Тестовые данные удалены");
     }
 }
