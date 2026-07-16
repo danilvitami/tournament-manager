@@ -5,154 +5,114 @@ import com.baev.tournament.model.Role;
 
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.sql.DataSource;// Интерфейс для управления пулом подключений к базе
-import java.sql.Connection;// Класс самого физического "провода" к базе данных
+import java.sql.Connection;// Класс физического "провода" к базе данных
 import java.sql.PreparedStatement;// Класс для безопасности SQL запросов
 import java.sql.ResultSet;// Класс для хранения ответа от базы,то есть строк из таблицы
 import java.sql.SQLException;
 @Repository
-public class UserRepositoryJdbcImpl implements UserRepository{
+public class UserRepositoryJdbcImpl implements UserRepository {
 
-    private final DataSource dataSource ;
+    private final DataSource dataSource;
 
-    public UserRepositoryJdbcImpl (DataSource dataSource){
+    public UserRepositoryJdbcImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }
+
     @Override
-    public User save(User user){
-        String sql = "INSERT INTO users (username, password,email, role) VALUES (?, ?, ?, ?) RETURNING id";
-        //RETURNING id для возврата сгенерированного id новой строки
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        /// поменять на try() {} потом
-        try {
-            conn = dataSource.getConnection();//берем готовый канал связи с БД
-            pstmt = conn.prepareStatement(sql);// Передаем текст в БД и создаем безопасный шаблон запроса
-            pstmt.setString(1,user.getUsername());
-            pstmt.setString(2,user.getPassword());
-            pstmt.setString(3,user.getEmail());
-            pstmt.setString(4,user.getRole().name());
+    public User save(User user) {
+        String sql = "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?) RETURNING id";
 
-            rs = pstmt.executeQuery();//база выполняет запрос и возвращает resultSet(таблицу)
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            if (rs.next()){
-                user.setId(rs.getLong("id"));//если база вернула строку
-                // с новым ID, извлекаем его из "id" и записываем в объект
-            }
-            return user;//пользователь с обновленным ID из бд
-        }
-        catch(SQLException e){
-            throw new RuntimeException("Ошибка при сохранении пользователя",e);
-        }
-        finally{
-            if (rs != null) {
-                try{rs.close();}
-                catch (SQLException e){
-                    System.err.println("[UserRepository.save] Не удается закрыть ResultSet:" + e.getMessage());//На случай,если
-                    //метод close() тоже выбросит ошибку,в противном случае stmt и conn останутся открытми
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getEmail());
+            pstmt.setString(4, user.getRole().name());
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    user.setId(rs.getLong("id"));
                 }
             }
-            if (pstmt  != null){
-                try{
-                    pstmt.close();
-                }
-                catch (SQLException e){
-                    System.err.println("[UserRepository.save] Не удается закрыть PreparedStatment:" + e.getMessage());
-                }
-            }
-            if (conn != null){
-                try{
-                    conn.close();
-                }
-                catch(SQLException e){
-                    System.err.println("[UserRepository.save] Не удается закрыть Connection:"+ e.getMessage());
-                }
-            }
+            return user;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при сохранении пользователя", e);
         }
     }
+
     @Override
-    public User findByUsername(String username){
+    public User findByUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
 
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        try{
-            conn = dataSource.getConnection();
-            pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
 
-            rs = pstmt.executeQuery();
-
-            if(rs.next()){
-                User user = new User();
-                user.setId(rs.getLong("id"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                user.setEmail(rs.getString("email"));
-                user.setRole(Role.valueOf(rs.getString("role")));
-                return user;
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
+                    user.setEmail(rs.getString("email"));
+                    user.setRole(Role.valueOf(rs.getString("role")));
+                    return user;
+                }
             }
             return null;
-        }
-        catch (SQLException e){
-            throw new RuntimeException("Ошибка при поиске пользователя",e);
-        }
-        finally{
-            if (rs != null){
-                try {rs.close();}
-                catch (SQLException e){
-                    System.err.println("[UserRepository.findByUsername] Не удается закрыть ResultSet:" + e.getMessage());
-                }
-            }
-            if (pstmt != null){
-                try{pstmt.close();}
-                catch (SQLException e){
-                    System.err.println("[UserRepository.findByUsername] Не удается закрыть PreparedStatement:" + e.getMessage());
-                }
-            }
-            if (conn != null){
-                try{conn.close();}
-                catch(SQLException e){
-                    System.err.println("[UserRepository.findByUsername] Не удается закрыть Connection:");
-                }
-            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при поиске пользователя", e);
         }
     }
+
     @Override
-    public void deleteByUsername(String username){
+    public void deleteByUsername(String username) {
         String sql = "DELETE FROM users WHERE username = ?";
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        try{
-            conn = dataSource.getConnection();
-            pstmt = conn.prepareStatement(sql);
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
             pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при удалении пользователя: " + username, e);
         }
-        catch(SQLException e){
-            throw new RuntimeException("Ошибка при удалении пользователя:"+ username,e);
-        }
-        finally{
-            if(pstmt != null){
-                try{
-                    pstmt.close();
-                }
-                catch (SQLException e){
-                    System.err.println("[UserRepository.delete] Не удается закрыть PreparedStatement: " + e.getMessage());
+    }
+
+    @Override
+    public List<User> findUsersByTournamentId(Long tournamentId) {
+        String sql = "SELECT u.* FROM users u " +
+                "JOIN tournament_users tu ON u.id = tu.user_id " +
+                "WHERE tu.tournament_id = ?";
+
+        List<User> participants = new ArrayList<>();
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, tournamentId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setEmail(rs.getString("email"));
+                    participants.add(user);
                 }
             }
-            if (conn != null){
-                try{
-                    conn.close();
-                }
-                catch(SQLException e){
-                    System.err.println("[UserRepository.delete] Не удается закрыть Connection: " + e.getMessage());
-                }
-            }
+            return participants;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при получении участников турнира с id: " + tournamentId, e);
         }
     }
 }

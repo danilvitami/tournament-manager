@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: tournament-manager
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tournament_db
+    username: postgres
+    password: ${DB_PASSWORD}
+
+  sql:
+    init:
+      mode: always

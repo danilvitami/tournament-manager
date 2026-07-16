@@ -30,7 +30,6 @@ public class TournamentServiceTests {
 
     @Test
     void createTournament_WhenAllFieldsAreOk_SavesTournament() {
-
         Tournament tournament = new Tournament("Кубок", "Описание", "Футбол", 2, 10);
 
         Tournament saved = tournamentService.createTournament(tournament);
