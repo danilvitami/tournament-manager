@@ -15,4 +15,6 @@ public class Match {
     private Integer score1;
     private Integer score2;
     private Long winnerId;
+    private String stage;
+    private Long nextMatchId;
 }
