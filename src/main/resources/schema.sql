@@ -29,5 +29,7 @@ CREATE TABLE IF NOT EXISTS matches (
     player2_id BIGINT REFERENCES users(id),
     score1 INTEGER,
     score2 INTEGER,
-    winner_id BIGINT REFERENCES users(id)
+    winner_id BIGINT REFERENCES users(id),
+    stage VARCHAR(50),
+    next_match_id INTEGER REFERENCES matches(id)
 );

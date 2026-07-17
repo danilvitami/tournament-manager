@@ -1,8 +1,11 @@
 package com.baev.tournament.service;
 
+import com.baev.tournament.model.Role;
 import com.baev.tournament.model.User;
 import com.baev.tournament.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -49,5 +52,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String username) {
         userRepository.deleteByUsername(username);
+    }
+
+    @Override
+    public void checkRole(Long userId, Role... allowedRoles) {
+        User user = findById(userId);
+        boolean hasRole = Arrays.asList(allowedRoles).contains(user.getRole());
+        if (!hasRole) {
+            throw new SecurityException("Пользователь " + user.getUsername()
+                    + " не имеет прав. Требуется роль: " + Arrays.toString(allowedRoles)
+                    + ", текущая роль: " + user.getRole());
+        }
     }
 }

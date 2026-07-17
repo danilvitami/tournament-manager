@@ -115,7 +115,6 @@ public class TournamentServiceImpl implements TournamentService {
             base[r] = base[r - 1] + bracketSize / (int) Math.pow(2, r);
         }
 
-        // Создаём все матчи и сохраняем в БД, чтобы получить id
         List<Match> allMatches = new ArrayList<>();
         for (int round = 0; round < totalRounds; round++) {
             int matchesInRound = bracketSize / (int) Math.pow(2, round + 1);
@@ -141,7 +140,7 @@ public class TournamentServiceImpl implements TournamentService {
 
         // Расставляем участников в первый раунд
         int firstRoundMatches = bracketSize / 2;
-        int byes = bracketSize - n; // кол-во "выходов" — матчей с одним игроком
+        int byes = bracketSize - n;
 
         int playerIdx = 0;
         for (int pos = 0; pos < firstRoundMatches; pos++) {
@@ -166,6 +165,7 @@ public class TournamentServiceImpl implements TournamentService {
                     }
                 }
             } else {
+
                 // Обычный матч: два игрока
                 m.setPlayer1Id(participants.get(playerIdx).getId());
                 playerIdx++;
@@ -176,7 +176,6 @@ public class TournamentServiceImpl implements TournamentService {
         }
     }
 
-    // Ближайшая степень двойки >= n
     private int nextPowerOf2(int n) {
         int power = 1;
         while (power < n) {
@@ -185,7 +184,6 @@ public class TournamentServiceImpl implements TournamentService {
         return power;
     }
 
-    // Название стадии по номеру раунда
     private String getStageName(int round, int totalRounds) {
         int fromFinal = totalRounds - 1 - round;
         return switch (fromFinal) {

@@ -1,5 +1,6 @@
 package com.baev.tournament.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
@@ -8,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Match {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     private Long tournamentId;
     private Long player1Id;

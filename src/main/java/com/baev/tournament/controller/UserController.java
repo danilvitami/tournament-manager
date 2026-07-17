@@ -1,5 +1,6 @@
 package com.baev.tournament.controller;
 
+import com.baev.tournament.model.Role;
 import com.baev.tournament.model.User;
 import com.baev.tournament.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +26,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
+    public User updateUser(@PathVariable Long id, @RequestBody User user, @RequestParam Long userId) {
+        userService.checkRole(userId, Role.ADMIN);
         return userService.updateUser(id, user);
     }
 
     @DeleteMapping("/{username}")
-    public void deleteUser(@PathVariable String username) {
+    public void deleteUser(@PathVariable String username, @RequestParam Long userId) {
+        userService.checkRole(userId, Role.ADMIN);
         userService.deleteUser(username);
     }
 }

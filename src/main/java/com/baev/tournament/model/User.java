@@ -1,5 +1,6 @@
 package com.baev.tournament.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class User {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     private String username;
     private String password;
@@ -27,7 +29,7 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User)o;
-        return id != 0 && this.id.equals(user.id);
-   }
+        User user = (User) o;
+        return id != null && this.id.equals(user.id);
+    }
 }
