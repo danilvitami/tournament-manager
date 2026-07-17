@@ -4,6 +4,8 @@ import com.baev.tournament.model.User;
 
 public interface UserService {
     User registerUser(User user);
+    User findById(Long id);
     User getUserByUsername(String username);
+    User updateUser(Long id, User user);
     void deleteUser(String username);
 }
