@@ -14,8 +14,9 @@ import java.util.List;
 @RequestMapping("/api/tournament")
 
 public class TournamentController {
-    @Autowired
     private TournamentService tournamentService;
+    public TournamentController(TournamentService tournamentService) {
+        this.tournamentService = tournamentService;}
 
     @PostMapping("/create")
 
