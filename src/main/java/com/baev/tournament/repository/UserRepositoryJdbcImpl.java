@@ -46,6 +46,33 @@ public class UserRepositoryJdbcImpl implements UserRepository {
     }
 
     @Override
+    public User findById(Long id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
+                    user.setEmail(rs.getString("email"));
+                    user.setRole(Role.valueOf(rs.getString("role")));
+                    return user;
+                }
+            }
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при поиске пользователя по id: " + id, e);
+        }
+    }
+
+    @Override
     public User findByUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
 
@@ -84,6 +111,31 @@ public class UserRepositoryJdbcImpl implements UserRepository {
 
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при удалении пользователя: " + username, e);
+        }
+    }
+
+    @Override
+    public User update(User user) {
+        String sql = "UPDATE users SET username = ?, password = ?, email = ?, role = ? WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getEmail());
+            pstmt.setString(4, user.getRole().name());
+            pstmt.setLong(5, user.getId());
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new RuntimeException("Пользователь с id " + user.getId() + " не найден.");
+            }
+            return user;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при обновлении пользователя с id: " + user.getId(), e);
         }
     }
 

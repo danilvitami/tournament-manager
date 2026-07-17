@@ -1,11 +1,12 @@
 package com.baev.tournament.repository;
 
 import com.baev.tournament.model.Tournament;
+import com.baev.tournament.model.TournamentStatus; // <-- Добавили импорт статуса
 
-import javax.sql.DataSource;// Интерфейс для управления пулом подключений к базе
+import javax.sql.DataSource;
 import org.springframework.stereotype.Repository;
-import java.sql.Connection;// Класс физического "провода" к базе данных
-import java.sql.PreparedStatement;// Класс для безопасности SQL запросов
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -56,11 +57,7 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Tournament t = new Tournament();
-                t.setId(rs.getLong("id"));
-                t.setName(rs.getString("name"));
-                t.setDiscipline(rs.getString("discipline"));
-                tournaments.add(t);
+                tournaments.add(mapRowToTournament(rs));
             }
 
         } catch (SQLException e) {
@@ -80,11 +77,7 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    Tournament t = new Tournament();
-                    t.setId(rs.getLong("id"));
-                    t.setName(rs.getString("name"));
-                    t.setDiscipline(rs.getString("discipline"));
-                    return t;
+                    return mapRowToTournament(rs);
                 }
             }
 
@@ -96,14 +89,19 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
 
     @Override
     public Tournament update(Tournament tournament) {
-        String sql = "UPDATE tournaments SET name = ?, discipline = ? WHERE id = ?";
+
+        String sql = "UPDATE tournaments SET name = ?, description = ?, discipline = ?, min_participants = ?, max_participants = ?, status = ? WHERE id = ?";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, tournament.getName());
-            pstmt.setString(2, tournament.getDiscipline());
-            pstmt.setLong(3, tournament.getId());
+            pstmt.setString(2, tournament.getDescription());
+            pstmt.setString(3, tournament.getDiscipline());
+            pstmt.setInt(4, tournament.getMinParticipants());
+            pstmt.setInt(5, tournament.getMaxParticipants());
+            pstmt.setString(6, tournament.getStatus() != null ? tournament.getStatus().name() : null);
+            pstmt.setLong(7, tournament.getId());
 
             int rowsAffected = pstmt.executeUpdate();
 
@@ -146,5 +144,22 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при регистрации на турнир. Возможно, пользователь уже зарегистрирован.", e);
         }
+    }
+
+    // ИСПРАВЛЕНИЕ: Вспомогательный метод, который честно достает ВСЕ поля из базы
+    private Tournament mapRowToTournament(ResultSet rs) throws SQLException {
+        Tournament t = new Tournament();
+        t.setId(rs.getLong("id"));
+        t.setName(rs.getString("name"));
+        t.setDescription(rs.getString("description"));
+        t.setDiscipline(rs.getString("discipline"));
+        t.setMinParticipants(rs.getInt("min_participants"));
+        t.setMaxParticipants(rs.getInt("max_participants"));
+
+        String statusStr = rs.getString("status");
+        if (statusStr != null) {
+            t.setStatus(TournamentStatus.valueOf(statusStr));
+        }
+        return t;
     }
 }
