@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS tournament_users (
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-CREATE TABLE matches (
+CREATE TABLE IF NOT EXISTS matches (
     id SERIAL PRIMARY KEY,
     tournament_id BIGINT REFERENCES tournaments(id),
     player1_id BIGINT REFERENCES users(id),
