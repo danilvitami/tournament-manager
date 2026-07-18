@@ -27,9 +27,9 @@ public class MatchRepositoryJdbcImpl implements MatchRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setLong(1, match.getTournamentId());
-            pstmt.setLong(2, match.getPlayer1Id());
-            pstmt.setLong(3, match.getPlayer2Id());
+до            pstmt.setObject(1, match.getTournamentId());
+            pstmt.setObject(2, match.getPlayer1Id());
+            pstmt.setObject(3, match.getPlayer2Id());
             pstmt.setString(4, match.getStage());
             if (match.getNextMatchId() != null) {
                 pstmt.setLong(5, match.getNextMatchId());
@@ -123,8 +123,8 @@ public class MatchRepositoryJdbcImpl implements MatchRepository {
         return new Match(
                 rs.getLong("id"),
                 rs.getLong("tournament_id"),
-                rs.getLong("player1_id"),
-                rs.getLong("player2_id"),
+                (Long) rs.getObject("player1_id"),
+                (Long) rs.getObject("player2_id"),
                 (Integer) rs.getObject("score1"),
                 (Integer) rs.getObject("score2"),
                 (Long) rs.getObject("winner_id"),
