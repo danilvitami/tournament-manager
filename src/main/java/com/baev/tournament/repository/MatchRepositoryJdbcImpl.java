@@ -27,7 +27,7 @@ public class MatchRepositoryJdbcImpl implements MatchRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-до            pstmt.setObject(1, match.getTournamentId());
+            pstmt.setObject(1, match.getTournamentId());
             pstmt.setObject(2, match.getPlayer1Id());
             pstmt.setObject(3, match.getPlayer2Id());
             pstmt.setString(4, match.getStage());
