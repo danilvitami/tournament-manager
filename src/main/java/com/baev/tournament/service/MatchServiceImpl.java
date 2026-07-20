@@ -41,7 +41,7 @@ public class MatchServiceImpl implements MatchService {
 
         matchRepository.update(match);
 
-        // Если есть следующий матч — автопереход победителя
+        // Если есть следующий матч - автопереход победителя
         if (match.getNextMatchId() != null) {
             Match nextMatch = matchRepository.findById(match.getNextMatchId());
             if (nextMatch != null) {
@@ -53,7 +53,7 @@ public class MatchServiceImpl implements MatchService {
                 matchRepository.update(nextMatch);
             }
         } else {
-            // Финальный матч — турнир завершён
+            // Финальный матч - турнир завершён
             var tournament = tournamentRepository.findById(match.getTournamentId());
             if (tournament != null) {
                 tournament.setStatus(TournamentStatus.COMPLETED);

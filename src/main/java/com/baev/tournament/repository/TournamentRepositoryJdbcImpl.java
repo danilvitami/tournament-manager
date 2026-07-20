@@ -1,7 +1,7 @@
 package com.baev.tournament.repository;
 
 import com.baev.tournament.model.Tournament;
-import com.baev.tournament.model.TournamentStatus; // <-- Добавили импорт статуса
+import com.baev.tournament.model.TournamentStatus;
 
 import javax.sql.DataSource;
 import org.springframework.stereotype.Repository;
@@ -146,7 +146,6 @@ public class TournamentRepositoryJdbcImpl implements TournamentRepository {
         }
     }
 
-    // ИСПРАВЛЕНИЕ: Вспомогательный метод, который честно достает ВСЕ поля из базы
     private Tournament mapRowToTournament(ResultSet rs) throws SQLException {
         Tournament t = new Tournament();
         t.setId(rs.getLong("id"));
